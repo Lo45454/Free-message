@@ -1,0 +1,10 @@
+{
+  "name": "Free Message",
+  "short_name": "Messages",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10172c",
+  "theme_color": "#10172c",
+  "lang": "fr"
+}
