@@ -1,1 +1,1 @@
-export const CONFIG = {url: "COLLE_TON_URL_SUPABASE", key: "COLLE_TA_CLE_PUBLISHABLE", iceServers: [{urls: "stun:stun.l.google.com:19302"}]};
+export const CONFIG = {url: "https://usccligjsnchpjtebaad.supabase.co", key: "sb_publishable_BmefP371TWJ8QxjSmyargQ_BKiGz1FM", iceServers: [{urls: "stun:stun.l.google.com:19302"}]};
