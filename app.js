@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://TON-PROJET.supabase.co";
-const SUPABASE_ANON_KEY = "TA_CLE_ANON";
+const SUPABASE_URL = "https://usccligjsnchpjtebaad.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_BmefP371TWJ8QxjSmyargQ_BKiGz1FM";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
