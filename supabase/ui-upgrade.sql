@@ -14,56 +14,34 @@ grant usage on schema storage to authenticated;
 grant select, insert on table storage.objects to authenticated;
 
 -- Check membership without recursively invoking the RLS policy on
--- conversation_members itself. The original schema's membership policies
--- query that same table and can recurse when sending or loading messages.
-create or replace function public.is_conversation_member(target_conversation uuid)
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.conversation_members cm
-    where cm.conversation_id = target_conversation
-      and cm.user_id = auth.uid()
-  );
-$$;
-grant execute on function public.is_conversation_member(uuid) to authenticated;
-
--- Insert attachments through a narrowly scoped RPC. This validates both the
--- signed-in sender and conversation membership before writing the message,
--- avoiding mismatches with pre-existing INSERT policies on older projects.
-create or replace function public.send_chat_attachment(
-  target_conversation uuid,
-  attachment_kind text,
-  attachment_path text,
-  attachment_name text
-)
-returns uuid
-language plpgsql
-security definer
-set search_path = public
-as $$
+-- conversation_members itself. Preserve an existing input argument name so
+-- PostgreSQL can replace the function without error 42P13.
+do $migration$
 declare
-  new_message_id uuid;
+  existing_arg text;
 begin
-  if auth.uid() is null then
-    raise exception 'Not authenticated';
-  end if;
-  if attachment_kind not in ('image','file') then
-    raise exception 'Invalid attachment type';
-  end if;
-  if not public.is_conversation_member(target_conversation) then
-    raise exception 'Not a member of this conversation';
-  end if;
-  insert into public.messages (conversation_id, sender_id, kind, content, file_name)
-  values (target_conversation, auth.uid(), attachment_kind, attachment_path, attachment_name)
-  returning id into new_message_id;
-  return new_message_id;
+  select p.proargnames[1] into existing_arg
+  from pg_proc p
+  where p.oid = to_regprocedure('public.is_conversation_member(uuid)');
+  existing_arg := coalesce(existing_arg, 'target_conversation');
+  execute format($ddl$
+    create or replace function public.is_conversation_member(%I uuid)
+    returns boolean
+    language sql
+    stable
+    security definer
+    set search_path = public
+    as $func$
+      select exists (
+        select 1 from public.conversation_members cm
+        where cm.conversation_id = $1
+          and cm.user_id = auth.uid()
+      );
+    $func$;
+  $ddl$, existing_arg);
 end;
-$$;
-grant execute on function public.send_chat_attachment(uuid,text,text,text) to authenticated;
+$migration$;
+grant execute on function public.is_conversation_member(uuid) to authenticated;
 
 drop policy if exists "members read memberships" on public.conversation_members;
 create policy "members read memberships" on public.conversation_members for select to authenticated
@@ -74,7 +52,19 @@ using (public.is_conversation_member(id));
 drop policy if exists "members read messages" on public.messages;
 create policy "members read messages" on public.messages for select to authenticated
 using (public.is_conversation_member(conversation_id));
-drop policy if exists "members send messages" on public.messages;
+-- Remove any older insert/ALL policies on messages (including policies with
+-- custom names). PostgreSQL combines permissive policies with OR and restrictive
+-- policies with AND, so a stale restrictive rule can keep blocking inserts.
+do $$
+declare old_policy record;
+begin
+  for old_policy in
+    select policyname from pg_policies
+    where schemaname='public' and tablename='messages' and cmd in ('INSERT','ALL')
+  loop
+    execute format('drop policy %I on public.messages', old_policy.policyname);
+  end loop;
+end $$;
 create policy "members send messages" on public.messages for insert to authenticated
 with check (auth.uid() = sender_id and public.is_conversation_member(conversation_id));
 
@@ -116,3 +106,4 @@ create policy "conversation members read chat files" on storage.objects for sele
   public.is_conversation_member(((storage.foldername(name))[2])::uuid)
  )
 );
+
