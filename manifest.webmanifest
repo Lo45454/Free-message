@@ -1,6 +1,6 @@
 {
-  "name": "Free Message",
-  "short_name": "Messages",
+  "name": "OpenChat",
+  "short_name": "OpenChat",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
