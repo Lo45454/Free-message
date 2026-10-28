@@ -1,6 +1,6 @@
-# OpenChat — mise à jour des groupes
+# TrueChat — mise à jour des groupes
 
-Cette version renomme l’application OpenChat et ajoute les conversations de groupe, leurs messages, photos, fichiers et notes vocales, ainsi que les appels audio/vidéo de groupe.
+Cette version renomme l’application TrueChat et ajoute les conversations de groupe, leurs messages, photos, fichiers et notes vocales, ainsi que les appels audio/vidéo de groupe.
 
 ## Supabase
 
@@ -12,8 +12,8 @@ Les appels de groupe utilisent le WebRTC maillé existant, sans serveur TURN : c
 
 ## GitHub et Render
 
-1. Décompresse `OpenChat-groups.zip`; tu obtiendras un dossier `OpenChat`.
-2. Remplace les fichiers de l’application dans le dépôt GitHub par le contenu du dossier `OpenChat` (y compris le nouveau dossier `supabase/group-upgrade.sql`). Garde les variables et paramètres Render déjà configurés.
+1. Décompresse `TrueChat.zip`; tu obtiendras un dossier `TrueChat`.
+2. Remplace les fichiers de l’application dans le dépôt GitHub par le contenu du dossier `TrueChat` (y compris le nouveau dossier `supabase/group-upgrade.sql`). Garde les variables et paramètres Render déjà configurés.
 3. Enregistre et pousse les changements sur GitHub. Render reconstruira le site depuis le dépôt comme d’habitude.
 4. Recharge le site après la fin du déploiement, puis connecte-toi. Le bouton **＋ Groupe** apparaît au-dessus de la liste des contacts. Il faut sélectionner au moins deux contacts acceptés.
 
@@ -23,5 +23,5 @@ Les membres d’un groupe voient les messages, les fichiers, les photos et les n
 
 - Le créateur ne peut sélectionner que des contacts acceptés; un groupe contient au maximum 15 personnes.
 - Les appels sont maillés, jusqu’à cinq participants, et ne disposent pas de serveur TURN.
-- Les appels de groupe ne fonctionnent que pendant que les appareils gardent OpenChat ouvert et connecté.
+- Les appels de groupe ne fonctionnent que pendant que les appareils gardent TrueChat ouvert et connecté.
 

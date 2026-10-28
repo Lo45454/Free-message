@@ -1,6 +1,6 @@
 {
-  "name": "OpenChat",
-  "short_name": "OpenChat",
+  "name": "TrueChat",
+  "short_name": "TrueChat",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
