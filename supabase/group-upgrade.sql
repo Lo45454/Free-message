@@ -1,4 +1,4 @@
--- OpenChat : groupes, médias de groupe et signalisation d’appels maillés.
+-- TrueChat : groupes, médias de groupe et signalisation d’appels maillés.
 -- Exécuter après le schéma initial et ui-upgrade.sql.
 
 create table if not exists public.conversation_groups (
